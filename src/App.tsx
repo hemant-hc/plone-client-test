@@ -4,11 +4,20 @@ import "./App.css";
 import { useGetContent } from "./action-hooks/useContent";
 import { useLogin } from "./action-hooks/useLogin";
 
+import PloneClient from "./PloneClient";
+
+PloneClient.initialize({
+    baseURL: "http://localhost:55001/plone",
+    headers: {
+        Authorization: "Bearer abcd0123456789",
+    },
+});
+
 function App() {
-    // const data = useGetContent({
-    //     path: "/",
-    // });
-    // console.log("data", data);
+    const data = useGetContent({
+        path: "/",
+    });
+    console.log("data", data);
 
     const [doLogin, { isLoading: isLoggingIn }] = useLogin();
 

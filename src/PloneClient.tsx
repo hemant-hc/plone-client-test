@@ -30,33 +30,44 @@ interface PloneClientContextValue {
 
 // export default PloneClient;
 
-const PloneClientContext = React.createContext<PloneClientContextValue>({
-    baseURL: "",
-    headers: {},
-});
+// xxxxxxxxxxxxx
+
+// const PloneClientContext = React.createContext<PloneClientContextValue>({
+//     baseURL: "",
+//     headers: {},
+// });
+
+// class PloneClient {
+//     ploneClientConfig: PloneClientContextValue;
+//     PloneClientProvider: ({
+//         children,
+//     }: {
+//         children: React.ReactNode;
+//     }) => React.ReactNode;
+
+//     constructor(ploneClientConfig: PloneClientContextValue) {
+//         this.ploneClientConfig = ploneClientConfig;
+//         this.PloneClientProvider = this.getProvider();
+//     }
+
+//     getProvider =
+//         () =>
+//         ({ children }: { children: React.ReactNode }) => {
+//             return (
+//                 <PloneClientContext.Provider value={this.ploneClientConfig}>
+//                     {children}
+//                 </PloneClientContext.Provider>
+//             );
+//         };
+// }
+
+// export default PloneClient;
 
 class PloneClient {
-    ploneClientConfig: PloneClientContextValue;
-    PloneClientProvider: ({
-        children,
-    }: {
-        children: React.ReactNode;
-    }) => React.ReactNode;
+    ploneClientConfig: PloneClientContextValue | null = null;
 
-    constructor(ploneClientConfig: PloneClientContextValue) {
-        this.ploneClientConfig = ploneClientConfig;
-        this.PloneClientProvider = this.getProvider();
-    }
-
-    getProvider =
-        () =>
-        ({ children }: { children: React.ReactNode }) => {
-            return (
-                <PloneClientContext.Provider value={this.ploneClientConfig}>
-                    {children}
-                </PloneClientContext.Provider>
-            );
-        };
+    initialize = (config: PloneClientContextValue) => {
+        this.ploneClientConfig = config;
+    };
 }
-
-export default PloneClient;
+export default new PloneClient();
