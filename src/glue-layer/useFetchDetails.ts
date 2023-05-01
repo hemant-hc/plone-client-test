@@ -1,31 +1,59 @@
-import { useQuery } from "@tanstack/react-query";
+import {
+    useQuery,
+    UseQueryResult,
+    UseQueryOptions,
+} from "@tanstack/react-query";
 import { apiRequest, ApiRequestParams } from "../api-request";
 import ConfigContainerClient from "../PloneClient";
 
-function getFetchQuery(path: string, options?: ApiRequestParams) {
-    const { params } = options || {};
+export type TGetFetchQueryOptions<
+    TResponse = any,
+    TError = {},
+    TSelectedData = TResponse
+> = UseQueryOptions<TResponse, TError, TSelectedData> &
+    Pick<ApiRequestParams, "params" | "headers" | "checkUrl">;
 
-    const queryKey = [path, "get", "content", params];
+function getFetchQuery<TResponse = any, TSelectedData = TResponse, TError = {}>(
+    path: string,
+    options?: Partial<TGetFetchQueryOptions<TResponse, TError, TSelectedData>>
+) {
+    const { params, headers, checkUrl, ...reactQueryOptions } = options || {};
+
+    const queryKey = [path, "get", { params }];
 
     const fullPath = `${
         ConfigContainerClient.ploneClientConfig?.baseURL ?? ""
-    }/${path}`;
+    }${path}`;
 
     const augmentedOptions = {
-        ...options,
+        params,
+        checkUrl,
         headers: {
-            ...options?.headers,
+            ...headers,
             ...ConfigContainerClient.ploneClientConfig?.headers,
         },
     };
 
     return {
+        ...reactQueryOptions,
         queryKey,
         queryFn: () => apiRequest("get", fullPath, augmentedOptions),
     };
 }
 
-export function useFetchDetails(path: string, options?: ApiRequestParams) {
-    const { data, ...meta } = useQuery(getFetchQuery(path, options));
+export function useFetchDetails<
+    TResponse = any,
+    TSelectedData = TResponse,
+    TError = {}
+>(
+    path: string,
+    options?: TGetFetchQueryOptions<TResponse, TError, TSelectedData>
+): [
+    TSelectedData | undefined,
+    Omit<UseQueryResult<TSelectedData, TError>, "data">
+] {
+    const { data, ...meta } = useQuery<TResponse, TError, TSelectedData>(
+        getFetchQuery<TResponse, TSelectedData, TError>(path, options)
+    );
     return [data, meta];
 }

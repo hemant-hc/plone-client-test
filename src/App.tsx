@@ -1,9 +1,9 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import { useGetContent } from "./action-hooks/useContent";
+import { useAddContent, useGetContent } from "./action-hooks/useContent";
 import { useLogin } from "./action-hooks/useLogin";
-
+import Cookies from "universal-cookie";
 import PloneClient from "./PloneClient";
 
 PloneClient.initialize({
@@ -14,19 +14,37 @@ PloneClient.initialize({
 });
 
 function App() {
-    const data = useGetContent({
+    const [token, setToken] = useState("");
+    const cookies = new Cookies();
+    const [data, { isLoading: isLoadingContent }] = useGetContent(
+        {
+            path: "/",
+        },
+        {
+            enabled: true,
+            onSuccess: (data) => {
+                console.log("from onsuccess function", data);
+            },
+        }
+    );
+
+    // console.log("data", data?.title ?? "");
+
+    const [addContent, { isLoading: isContentAdding }] = useAddContent({
         path: "/",
     });
-    console.log("data", data);
+    const addContentCall = useCallback(() => {
+        return addContent({ "@type": "Document", title: "My Page" });
+    }, [addContent]);
 
     const [doLogin, { isLoading: isLoggingIn }] = useLogin();
 
-    const makeLoginApiCall = useCallback(() => {
-        return doLogin(
-            JSON.stringify({ username: "hemant", password: "itsmeonly" })
-        );
+    const makeLoginApiCall = useCallback(async () => {
+        const result = await doLogin({ login: "admin", password: "secret" });
+        setToken(result.token);
     }, [doLogin]);
 
+    cookies.set("auth_token", token);
     return (
         <div className="App">
             <header className="App-header">
@@ -42,9 +60,13 @@ function App() {
                 >
                     Learn React
                 </a>
-                {isLoggingIn && <span>Loading...</span>}
+                {isLoadingContent && <span>Loading...</span>}
+                {isLoggingIn && <span>Updating...</span>}
                 <button type="submit" onClick={makeLoginApiCall}>
                     Make Login API Call
+                </button>
+                <button type="submit" onClick={addContentCall}>
+                    Add content data API Call
                 </button>
             </header>
         </div>

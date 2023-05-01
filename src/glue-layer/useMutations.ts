@@ -13,11 +13,11 @@ export function useMutations(
     UseMutateAsyncFunction<any, any, any, any>,
     Omit<UseMutationResult<any, any, any, any>, "mutateAsync">
 ] {
-    const { type } = options || {};
+    const { type, ...restOptions } = options || {};
 
     const mutationFn = async (data: any) => {
-        const optionsWithData = { ...options, data };
-
+        const optionsWithData = { ...restOptions, data };
+        console.log("post", path, optionsWithData);
         switch (type) {
             case MUTATION_TYPES.create:
                 return apiRequest("post", path, optionsWithData);

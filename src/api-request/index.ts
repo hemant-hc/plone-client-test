@@ -24,7 +24,7 @@ export async function apiRequest(
     if (!response.ok) {
         throw new Error("Network response was not ok");
     }
-    console.log(response);
+
     return response.body;
 }
 
@@ -76,9 +76,9 @@ export default class API {
                     request.type(type);
                 }
 
-                Object.keys(headers).forEach((key) =>
-                    request.set(key, headers[key])
-                );
+                // Object.keys(headers).forEach((key) =>
+                //     request.set(key, headers[key])
+                // );
 
                 if (data) {
                     request.send(data);
@@ -115,3 +115,16 @@ export default class API {
         });
     }
 }
+
+/*
+  GET requests
+  
+  Specify the response schema
+
+  ---
+
+  POST requests
+
+  Specify the request schema
+  Specify the response schema
+*/
