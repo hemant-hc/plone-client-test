@@ -13,10 +13,7 @@ export type TUseMutationsOptions<
     TData = any,
     TError = any,
     TVariables = any
-> = UseMutationOptions<TData, TError, TVariables> &
-    Omit<ApiRequestParams, "data"> & {
-        type: string;
-    };
+> = UseMutationOptions<TData, TError, TVariables>;
 
 export function useMutations<TData = any, TError = any, TVariables = any>(
     path: string,
@@ -28,7 +25,7 @@ export function useMutations<TData = any, TError = any, TVariables = any>(
 ] {
     const { type, ...restOptions } = options || {};
 
-    const mutationFn: MutationFunction<TData, TVariables> = async (
+    const mutationFn: MutationFunction<TData, TVariables> = (
         data: TVariables
     ) => {
         const optionsWithData = { ...restOptions, data };
