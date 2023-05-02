@@ -65,6 +65,63 @@ interface IGetContentResponse {
     title: string;
 }
 
+interface IAddContentResponse {
+    "@components": {
+        [key in TComponents]: {
+            "@id": string;
+        };
+    };
+    "@id": string;
+    "@type": string;
+    UID: string;
+    allow_discussion: boolean;
+    blocks: unknown;
+    blocks_layout: {
+        [k in string]: {
+            items: unknown;
+        } & Record<string, unknown>;
+    };
+    contributors: [];
+    creators: string[];
+    description: string;
+    effective: null;
+    exclude_from_nav: boolean;
+    expires: null;
+    id: string;
+    is_folderish: boolean;
+    items: [];
+    items_total: number;
+    language: string;
+    lock: {
+        locked: boolean;
+        stealable: boolean;
+    };
+    modified: string;
+    next_item: unknown;
+    parent: {
+        "@id": string;
+        "@type": string;
+        description: string;
+        title: string;
+    };
+    preview_caption: null;
+    preview_image: null;
+    previous_item: {
+        "@id": string;
+        "@type": string;
+        description: string;
+        title: string;
+    };
+    relatedItems: unknown;
+    review_state: string;
+    rights: string;
+    subjects: [];
+    title: string;
+    version: string;
+    working_copy: null;
+    working_copy_of: null;
+}
+
 type getContentArgs = {
     path: string;
     version?: string;
@@ -97,12 +154,17 @@ export interface Content {
     title: string;
 }
 
+export interface IAddContentArgsData {
+    "@type": string;
+    title: string;
+}
+
 interface IAddContentArgs {
     path: string;
 }
 
 export const useAddContent = ({ path }: IAddContentArgs) => {
-    return useMutations(path, {
+    return useMutations<IAddContentResponse, any, IAddContentArgsData>(path, {
         type: MUTATION_TYPES.create,
     });
 };

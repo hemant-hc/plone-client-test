@@ -30,11 +30,14 @@ function App() {
 
     // console.log("data", data?.title ?? "");
 
-    const [addContent, { isLoading: isContentAdding }] = useAddContent({
+    const [addContent, mutationOptions] = useAddContent({
         path: "/",
     });
-    const addContentCall = useCallback(() => {
-        return addContent({ "@type": "Document", title: "My Page" });
+    const addContentCall = useCallback(async () => {
+        const result = await addContent({
+            "@type": "Document",
+            title: "My Page",
+        });
     }, [addContent]);
 
     const [doLogin, { isLoading: isLoggingIn }] = useLogin();

@@ -2,20 +2,35 @@ import {
     UseMutateAsyncFunction,
     UseMutationResult,
     useMutation,
+    MutationOptions,
+    UseMutationOptions,
+    MutationFunction,
 } from "@tanstack/react-query";
 import { apiRequest, ApiRequestParams } from "../api-request";
 import { MUTATION_TYPES } from "./identifiers";
 
-export function useMutations(
+export type TUseMutationsOptions<
+    TData = any,
+    TError = any,
+    TVariables = any
+> = UseMutationOptions<TData, TError, TVariables> &
+    Omit<ApiRequestParams, "data"> & {
+        type: string;
+    };
+
+export function useMutations<TData = any, TError = any, TVariables = any>(
     path: string,
-    options?: Omit<ApiRequestParams, "data"> & { type: string }
+    options?: Omit<ApiRequestParams, "data"> & { type: string },
+    mutationOptions?: TUseMutationsOptions
 ): [
-    UseMutateAsyncFunction<any, any, any, any>,
-    Omit<UseMutationResult<any, any, any, any>, "mutateAsync">
+    UseMutateAsyncFunction<TData, TError, TVariables>,
+    Omit<UseMutationResult<TData, TError, TVariables>, "mutateAsync">
 ] {
     const { type, ...restOptions } = options || {};
 
-    const mutationFn = async (data: any) => {
+    const mutationFn: MutationFunction<TData, TVariables> = async (
+        data: TVariables
+    ) => {
         const optionsWithData = { ...restOptions, data };
         console.log("post", path, optionsWithData);
         switch (type) {
@@ -32,11 +47,16 @@ export function useMutations(
         }
     };
 
-    const mutationOtions = {
-        mutationKey: [path, type],
-    };
+    const mutationKeyAndOptions: UseMutationOptions<TData, TError, TVariables> =
+        {
+            mutationKey: [path, type],
+            ...mutationOptions,
+        };
 
-    const { mutateAsync, ...meta } = useMutation(mutationFn, mutationOtions);
+    const { mutateAsync, ...meta } = useMutation<TData, TError, TVariables>(
+        mutationFn,
+        mutationKeyAndOptions
+    );
 
     return [mutateAsync, meta];
 }
