@@ -1,8 +1,12 @@
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import { useAddContent, useGetContent } from "./action-hooks/useContent";
-import { useLogin } from "./action-hooks/useLogin";
+import {
+    AddContentArgsDataSchema,
+    useAddContent,
+    useGetContent,
+} from "./action-hooks/useContent";
+import { useLogin, LoginArgsSchema } from "./action-hooks/useLogin";
 import Cookies from "universal-cookie";
 import PloneClient from "./PloneClient";
 
@@ -34,16 +38,24 @@ function App() {
         path: "/",
     });
     const addContentCall = useCallback(async () => {
-        const result = await addContent({
+        const addContentData = {
             "@type": "Document",
             title: "My Page",
-        });
+        };
+        const validatedAddContentData =
+            AddContentArgsDataSchema.parse(addContentData);
+
+        const result = await addContent(validatedAddContentData);
+        console.log(result.creators);
     }, [addContent]);
 
     const [doLogin, { isLoading: isLoggingIn }] = useLogin();
 
     const makeLoginApiCall = useCallback(async () => {
-        const result = await doLogin({ login: "admin", password: "secret" });
+        const loginData = { login: "admin", password: "secret" };
+        const validatedLoginData = LoginArgsSchema.parse(loginData);
+        const result = await doLogin(validatedLoginData);
+
         setToken(result.token);
     }, [doLogin]);
 

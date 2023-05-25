@@ -2,7 +2,6 @@ import {
     UseMutateAsyncFunction,
     UseMutationResult,
     useMutation,
-    MutationOptions,
     UseMutationOptions,
     MutationFunction,
 } from "@tanstack/react-query";

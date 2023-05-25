@@ -1,5 +1,3 @@
-import React from "react";
-
 interface PloneClientContextValue {
     baseURL: string;
     headers: Record<string, string>;

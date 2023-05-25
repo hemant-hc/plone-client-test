@@ -1,7 +1,7 @@
-import { ApiRequestParams } from "../api-request";
 import { useMutations, useFetchDetails } from "../glue-layer";
 import { TGetFetchQueryOptions } from "../glue-layer/useFetchDetails";
 import { MUTATION_TYPES } from "../glue-layer/identifiers";
+import { z } from "zod";
 
 type TComponents =
     | "actions"
@@ -129,21 +129,37 @@ type getContentArgs = {
     fullObjects?: boolean;
 };
 
+const getContentArgsSchema = z.object({
+    path: z.string(),
+    version: z.string().optional(),
+    page: z.number().optional(),
+    fullObjects: z.boolean().optional(),
+});
+
 export const useGetContent = (
     { path, version, page, fullObjects }: getContentArgs,
     options?: Pick<TGetFetchQueryOptions, "enabled" | "onSuccess" | "onError">
 ) => {
+    const validatedArgs = getContentArgsSchema.parse({
+        path,
+        version,
+        page,
+        fullObjects,
+    });
+
     options = {
         ...options,
     };
-    if (version) {
-        path = `${path}/@history/${version}`;
+    if (validatedArgs.version) {
+        path = `${path}/@history/${validatedArgs.version}`;
     }
 
     return useFetchDetails<IGetContentResponse>(path, {
         params: {
-            ...(version && { version }),
-            ...(fullObjects && { fullobjects: fullObjects }),
+            ...(validatedArgs.version && { version: validatedArgs.version }),
+            ...(validatedArgs.fullObjects && {
+                fullobjects: validatedArgs.fullObjects,
+            }),
         },
         ...options,
     });
@@ -163,8 +179,24 @@ interface IAddContentArgs {
     path: string;
 }
 
+export const AddContentArgsDataSchema = z.object({
+    "@type": z.string(),
+    title: z.string(),
+});
+
+const AddContentArgsSchema = z.object({
+    path: z.string(),
+});
+
 export const useAddContent = ({ path }: IAddContentArgs) => {
-    return useMutations<IAddContentResponse, any, IAddContentArgsData>(path, {
-        type: MUTATION_TYPES.create,
+    const validatedArgs = AddContentArgsSchema.parse({
+        path,
     });
+
+    return useMutations<IAddContentResponse, any, IAddContentArgsData>(
+        validatedArgs.path,
+        {
+            type: MUTATION_TYPES.create,
+        }
+    );
 };

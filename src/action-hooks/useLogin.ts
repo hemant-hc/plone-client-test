@@ -1,22 +1,15 @@
-import { ApiRequestParams } from "../api-request";
 import { useMutations } from "../glue-layer";
 import { MUTATION_TYPES } from "../glue-layer/identifiers";
-import ConfigContainerClient from "../PloneClient";
+import { z } from "zod";
 
 export interface Login {
     token: string;
 }
 
-export type LoginArgs = {
-    username: string;
-    password: string;
-    config: PloneClientConfig;
-};
-
-export type PloneClientConfig = {
-    apiPath: string;
-    token?: string;
-};
+export const LoginArgsSchema = z.object({
+    login: z.string(),
+    password: z.string(),
+});
 
 const LOGIN_PATHS = {
     LOGIN: "/@login",

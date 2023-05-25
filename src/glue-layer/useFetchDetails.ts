@@ -12,7 +12,7 @@ export type TGetFetchQueryOptions<
     TSelectedData = TResponse
 > = UseQueryOptions<TResponse, TError, TSelectedData> &
     Pick<ApiRequestParams, "params" | "headers" | "checkUrl">;
-
+    
 function getFetchQuery<TResponse = any, TSelectedData = TResponse, TError = {}>(
     path: string,
     options?: Partial<TGetFetchQueryOptions<TResponse, TError, TSelectedData>>
